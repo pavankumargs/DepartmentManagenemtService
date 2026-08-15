@@ -21,37 +21,45 @@ import com.pavan.microservices.department.service.DepartmentService;
 @RestController
 @RequestMapping("/department")
 public class DepartmentController {
-	
+
 	@Autowired
 	private DepartmentService departmentService;
-	
+
 	@PostMapping
 	public ResponseEntity<Department> saveDepartment(@RequestBody Department department) {
-		 Department savedDepartment = departmentService.saveDepartment(department);
-		 return new ResponseEntity<>(savedDepartment, HttpStatus.CREATED);
+		Department savedDepartment = departmentService.saveDepartment(department);
+		return new ResponseEntity<>(savedDepartment, HttpStatus.CREATED);
 	}
-	
+
 	@GetMapping("/{id}")
-	public ResponseEntity<Department>  getDepartmentById(@PathVariable Long id) {
-		 Department department = departmentService.getDepartmentById(id);
-		 return new ResponseEntity<>(department, HttpStatus.OK);
+	public ResponseEntity<Department> getDepartmentById(@PathVariable Long id) {
+		Department department = departmentService.getDepartmentById(id);
+		return new ResponseEntity<>(department, HttpStatus.OK);
 	}
-	
+
 	@GetMapping
-	public ResponseEntity<List<Department>>  getAllDepartments() {
-		 List<Department> allDepartments = departmentService.getAllDepartments();
-		 return new ResponseEntity<List<Department>>(allDepartments, HttpStatus.OK);
+	public ResponseEntity<List<Department>> getAllDepartments() {
+		List<Department> allDepartments = departmentService.getAllDepartments();
+		return new ResponseEntity<List<Department>>(allDepartments, HttpStatus.OK);
 	}
-	
+
 	@PutMapping("/{id}")
 	public ResponseEntity<Department> updateDepartment(@PathVariable Long id, @RequestBody Department department) {
-		 Department updatedDepartment = departmentService.updateDepartmentById(id, department);
-		 return new ResponseEntity<>(updatedDepartment, HttpStatus.OK);
+		Department updatedDepartment = departmentService.updateDepartmentById(id, department);
+		return new ResponseEntity<>(updatedDepartment, HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteDepartment(@PathVariable Long id) {
 		departmentService.deleteDepartment(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	// This end point is specifically created to test the OpenFeign Retry Mechanism
+
+	@GetMapping("/retry-test")
+	public ResponseEntity<String> retryTest() {
+		return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).header("Retry-After", "1")
+				.body("Temporary Department Service failure");
 	}
 }

@@ -1,6 +1,5 @@
 package com.pavan.microservices.department.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,11 @@ public class DepartmentService {
 	}
 
 	public Department getDepartmentById(Long id) {
+		try {
+			Thread.sleep(10000);
+		}catch (Exception e) {
+			 Thread.currentThread().interrupt();
+		}
 		return departmentRepository.findById(id)
 				.orElseThrow(() -> new DepartmentNotFoundException("Department Id " + id + " Not Found"));
 	}
@@ -54,4 +58,10 @@ public class DepartmentService {
 				.orElseThrow(() -> new DepartmentNotFoundException("Department Id " + id + " Not Found"));
 		departmentRepository.delete(department);
 	}
+	
+	// This method is specifically created to test the OpenFeign Retry Mechanism.
+	public String retryTest() {
+		throw new RuntimeException("Temporary failure for retry testing");
+	}
+	
 }
